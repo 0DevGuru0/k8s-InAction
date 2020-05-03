@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projected
+spec:
+  selector:
+    matchLabels:
+      app: project-vol
+  template:
+    metadata:
+      labels:
+        app: project-vol
+    spec:
+      containers:
+      - name: web-server
+        image: nginx
+        volumeMounts:
+          - name: all-in-One
+            mountPath: "/project"
+          - name: emptyDir
+            mountPath: emptyDir
+            readOnly: true
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
+      volumes:
+        - name: emptyDir
+          emptyDir:
+            medium: Memory
+        - name: all-in-One
+          projected:
+              sources:
+                  - configMap:
+                    - name: configMap
+                      items:
+                        key: sysState
+                        path: config/sysConfig
+                  - downwardAPI:
+                      - items: 
+                        - path: labels
+                        fieldRef:
+                          fieldPath: metadata.labels
+                        - path: annotation
+                          fieldRef:
+                            fieldPath: metadata.annotations
+                  - secret:
+                      - name: my-secret
+                        items:
+                          - key: username
+                            path: config/username
+                          - key: password
+                            path: config/password

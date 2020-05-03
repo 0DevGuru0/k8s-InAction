@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Config
+preferences: {}
+
+clusters:
+  - cluster:
+    name: development
+  - cluster:
+    name: scratch
+
+users:
+  - name: developer
+  - name: experimenter
+
+contexts:
+  - context:
+    name: dev-frontend
+  - context:
+    name: dev-storage
+  - context:
+    name: exp-scratch
+
+# k config --kubeconfig=config-demo set-cluster development --server=https://1.2.3.4 --certificate-authority=fake-ca-file
+# k config --kubeconfig=config-demo set-cluster scratch     --server=https://5.6.7.8 --insecure-skip-tls-verify
+
+# k config --kubeconfig=config-demo set-credentials developer     --client-certificate=fake-cert-file --client-key=fake-key-seefile
+# k config --kubeconfig=config-demo set-credentials experimenter  --username=exp --password=some-password
+
+# k config --kubeconfig=config-demo set-context dev-frontend  --cluster=development --namespace=frontend  --user=developer
+# k config --kubeconfig=config-demo set-context dev-storage   --cluster=development --namespace=storage   --user=developer
+# k config --kubeconfig=config-demo set-context exp-scratch   --cluster=scratch     --namespace=default   --user=experimenter
+# k config --kubeconfig=config-demo-2 set-context dev-ramp-up --cluster=development --namespace=ramp --user=developer
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: fake-ca-file
+    server: https://1.2.3.4
+  name: development
+- cluster:
+    insecure-skip-tls-verify: true
+    server: https://5.6.7.8
+  name: scratch
+contexts:
+- context:
+    cluster: development
+    namespace: frontend
+    user: developer
+  name: dev-frontend
+- context:
+    cluster: development
+    namespace: storage
+    user: developer
+  name: dev-storage
+- context:
+    cluster: scratch
+    namespace: default
+    user: experimenter
+  name: exp-scratch
+current-context: ""
+kind: Config
+preferences: {}
+users:
+- name: developer
+  user:
+    client-certificate: fake-cert-file
+    client-key: fake-key-seefile
+- name: experimenter
+  user:
+    password: some-password
+    username: exp
+
+# kubectl config --kubeconfig=config-demo use-context dev-frontend
+# kubectl config --kubeconfig=config-demo use-context dev-storage
+# kubectl config --kubeconfig=config-demo use-context exp-scratch

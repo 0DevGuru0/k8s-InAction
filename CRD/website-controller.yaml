@@ -1,0 +1,36 @@
+# kubectl create serviceaccount website-controller
+# kubectl create clusterrolebinding website-controller --clusterrole=cluster-admin --serviceaccount=default:website-controller
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: website-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: website-controller
+  template:
+    metadata:
+      name: website-controller
+      labels:
+        app: website-controller
+    spec:
+      serviceAccountName: website-controller
+      containers:
+        - name: proxy
+          image: luksa/kubectl-proxy
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+          ports:
+            - containerPort: 5000
+        - name: main
+          image: luksa/website-controller
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+          ports:
+            - containerPort: 3000

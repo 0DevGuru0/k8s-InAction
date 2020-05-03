@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: project-vol
+ labels:
+  vol: mix
+spec:
+ replicas: 4
+ selector:
+  matchLabels:
+   app: nginx
+ strategy:
+  type: RollingUpdate
+  rollingUpdate:
+   maxSurge: 2
+   maxUnavailable: 1
+ template:
+  metadata:
+   labels:
+    app: nginx
+  spec:
+   containers:
+    - name: nginx
+      image: nginx
+      resources:
+       limits:
+        cpu: ".5"
+        memory: "500Mi"
+       requests:
+        cpu: ".4"
+        memory: "100Mi"
+      volumeMounts:
+       - name: secret
+         mountPath: volume/secret
+         readOnly: true
+       - name: emptydir
+         mountPath: volume/emptyDir
+         readOnly: true
+       - name: configmap
+         mountPath: volume/configMap
+         readOnly: true
+       - name: hostpath
+         mountPath: volume/hostPath
+         readOnly: true
+       - name: downwardapi
+         mountPath: volume/downwardApi
+         readOnly: true
+   volumes:
+    - name: secret
+      secret:
+       secretName: secureconfig
+    - name: emptydir
+      emptyDir: {}
+    - name: configmap
+      configMap:
+       name: generalconfig
+    - name: hostpath
+      hostPath:
+       type: Directory
+       path: /var/lib/docker
+    - name: downwardapi
+      downwardAPI:
+       items:
+        - path: annotations
+          fieldRef:
+           fieldPath: metadata.annotations
+        - path: labels
+          fieldRef:
+           fieldPath: metadata.labels
+# conf.env -> username=sajjad password=930611040
+# k create secret generic secureconfig --from-env-file=conf.env
+# k create configmap generalconfig --from-literal=environment=production
+# k expose deployment project-vol --type=NodePort --port=8080 --target-port=8080
+

@@ -1,0 +1,21 @@
+# https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+# https://kubernetesbyexample.com/labels/
+apiVersion: v1
+kind: Pod
+metadata:
+ name: nginx
+ labels:
+  env: production
+  function: server
+  role: backEnd
+spec:
+ nodeSelector:
+  diskType: ssd
+ containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+    resources:
+     limits:
+      cpu: 1mb
+      memory: 250Mb

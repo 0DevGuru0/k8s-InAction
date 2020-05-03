@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: nginx-deploy
+ labels:
+  app: nginx
+spec:
+ replicas: 4
+ minReadySeconds: 30
+
+ selector:
+  matchLabels:
+   app: nginx-dep
+
+ strategy:
+  type: rollingUpdate
+  rollingUpdate:
+   maxSurge: 2
+   maxUnavailable: 1
+
+ template:
+  metadata:
+   labels:
+    app: nginx-dep
+
+  spec:
+   affinity:
+    nodeAffinity:
+     preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+         matchExpressions:
+          - key: env
+            operator: In
+            values:
+             - testDev
+
+   tolerations:
+    - effect: NoSchedule
+      key: dedicated
+      value: test-team
+
+   containers:
+    - name: nginx
+      image: nginx
+      resources:
+       limits:
+        cpu: "250m"
+        memory: "250Mi"
+      readinessProbe:
+       periodSeconds: 10
+       initialDelaySeconds: 5
+       exec:
+        command:
+         - cat
+         - /etc/nginx/nginx.conf
+
+      livenessProbe:
+       periodSeconds: 5
+       initialDelaySeconds: 5
+       exec:
+        command:
+         - cat
+         - /etc/nginx/nginx.conf

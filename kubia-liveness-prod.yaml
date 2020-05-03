@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: liveness-exec
+spec:
+  containers:
+  - name: liveness
+    image: luksa/kubia-unhealthy
+    env:
+      - name: ENEMIES
+        valueFrom:
+            configMapKeyRef:
+              key: enemies
+              name: environment
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 5

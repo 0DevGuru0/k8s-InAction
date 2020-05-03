@@ -1,0 +1,9 @@
+# Tips For LoadBalancer Essence :
+#  - give One ExternalIP(
+#     cloudProvider create it automatically/
+#     create manually from CloudProvider and linked in the Object Definition/
+#     install metal-lb and create IP for development purpose
+#  );
+#  - balance traffic among side of the pods
+#  - internally it's create NodePort
+#  - just select one service whereas ingress select as many as want.

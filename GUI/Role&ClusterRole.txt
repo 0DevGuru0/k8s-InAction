@@ -1,0 +1,13 @@
+REF::https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+
+Api Groups 
+    - namespaced --> Role & RoleBinding
+    - cluster scope --> ClusterRole & CLusterRoleBinding
+
+** If you want to define a role within a namespace, use a Role;
+** If you want to define a role cluster-wide, use a ClusterRole.
+** Determine the api groups list [k proxy \ curl 127.0.0.1:8001 -k]
+** In role definition if doesn't specify namespace it assume namespace to default
+** If use clusterRole for namespaced api ,user can manipulate role all over the cluster [all namespaces]
+** k api-resources --namespaced=[false|true]
+** k auth can-i create deployment

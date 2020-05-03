@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-env-from
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      resources:
+        limits:
+          cpu: '500m'
+          memory: '400Mi'
+      envFrom:
+        - configMapRef:
+            name: < configMapName >

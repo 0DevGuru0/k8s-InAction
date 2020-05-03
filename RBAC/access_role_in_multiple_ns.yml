@@ -1,0 +1,55 @@
+# We can access to the clusterRoles that we define in specific namespaces by defining clusterRole in roleBinding.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+ name: role
+rules:
+ - apiGroups: [""]
+   resources: ["pods"]
+   verbs: ["get", "list", "watch"]
+
+ - apiGroups: ["extensions"]
+   resources: ["deployments"]
+   verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ name: rolebinding-1
+ namespace: development
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: ClusterRole
+ name: role
+subjects:
+ - apiGroup: rbac.authorization.k8s.io
+   kind: User
+   name: user1
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ name: rolebinding-1
+ namespace: test
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: ClusterRole
+ name: role
+subjects:
+ - apiGroup: rbac.authorization.k8s.io
+   kind: User
+   name: user1
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ name: rolebinding-1
+ namespace: production
+roleRef:
+ apiGroup: rbac.authorization.k8s.io
+ kind: ClusterRole
+ name: role
+subjects:
+ - apiGroup: rbac.authorization.k8s.io
+   kind: User
+   name: user3

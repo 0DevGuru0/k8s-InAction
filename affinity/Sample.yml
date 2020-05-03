@@ -1,0 +1,48 @@
+# kubectl taint nodes node01 type=dev:NoExecute
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: sample-deploy
+ labels:
+  type: development
+  app: front-end
+spec:
+ selector:
+  matchLabels:
+   app: nginx
+ template:
+  metadata:
+   name: nginx
+  spec:
+   affinity:
+    nodeAffinity:
+     requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+       - matchExpressions:
+          - key: type
+            operator: In
+            values:
+             - dev
+             - test
+             - development
+   containers:
+    - name: nginx
+      image: nginx
+      imagePullPolicy: Always
+      resources:
+       limits:
+        cpu: "500m"
+        memory: "250Mi"
+   tolerations:
+    - key: "type"
+      operator: "Exists"
+      effect: "PreferNoSchedule"
+    - key: "type"
+      operator: "Equal"
+      value: "dev"
+      effect: "NoExecute"
+      tolerationSeconds: 3600
+    - key: "type"
+      operator: "NotEqual"
+      value: "prod"
+      effect: "NoExecute"

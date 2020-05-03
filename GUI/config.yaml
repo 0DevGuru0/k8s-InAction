@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Config
+current-context:
+clusters:
+ - name: AdminCluster
+   cluster:
+    certificate-authority: /etc/kubernetes/pki/ca.crt
+    server: https://adminCluster:6443
+
+ - name: Development
+   cluster:
+    certificate-authority: /etc/kubernetes/pki/ca.crt
+    server: https://developmentCluster:6443
+
+ - name: Production
+   cluster:
+    certificate-authority: /etc/kubernetes/pki/ca.crt
+    server: https://productionCluster:6443
+
+contexts:
+ - name: admin@AdminCluster
+   context:
+    cluster: AdminCluster
+    user: admin
+    namespace: default
+
+ - name: developer@Development
+   context:
+    cluster: Development
+    user: developer
+    namespace: default
+
+ - name: producer@Production
+   context:
+    cluster: Production
+    user: producer
+    namespace: default
+
+users:
+ - name: admin
+   user:
+    client-key: /etc/kubernetes/pki/users/admin.key
+    client-certificate: admin.cert
+
+ - name: developer
+   user:
+    client-key: /etc/kubernetes/pki/users/developer.key
+    client-certificate: developer.cert
+
+ - name: producer
+   user:
+    client-key: /etc/kubernetes/pki/users/producer.key
+    client-certificate: producer.cert

@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mix-volume
+  labels:
+    volume: mix
+spec:
+  minReadySeconds: 30
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: container1
+          image: nginx
+          resources:
+            limits:
+              cpu: ".5"
+              memory: "500Mi"
+            requests:
+              cpu: ".4"
+              memory: "100Mi"
+          volumeMounts:
+            - name: secret
+              mountPath: etc/secrets
+              readOnly: true
+
+            - name: downwardapi
+              mountPath: etc/podInfo
+              readOnly: true
+
+            - name: freespace
+              mountPath: etc/freeSpace
+              readOnly: true
+
+            - name: hostpath # Volume mounts a file or directory from the host node’s filesystem into the Pod
+              mountPath: etc/host
+              readOnly: true
+
+            - name: config-volume # Inject configuration data into Pods
+              mountPath: etc/configData
+              readOnly: true
+      volumes:
+        - name: secret
+          secret:
+            secretName: secretOne
+            items:
+              - key: username
+                path: my_username
+        - name: downwardapi
+          downwardAPI:
+            items:
+              - path: annotations
+                fieldRef:
+                  fieldPath: metadata.annotations
+              - path: labels
+                fieldRef:
+                  fieldPath: metadata.labels
+        - name: freespace
+          emptyDir:
+            medium: Memory
+        - name: hostpath
+          hostPath:
+            path: /var/lib/docker
+            type: Directory
+        - name: config-volume
+          configMap:
+            name: env_config
+            items:
+              - key: environment
+                path: production

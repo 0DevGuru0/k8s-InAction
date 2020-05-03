@@ -1,0 +1,4 @@
+# -->> NodePort
+# create internal ip address to make accessible through the cluster
+# create External port to make selected pod accessible for external user.
+# use NodePort in development scenarios.

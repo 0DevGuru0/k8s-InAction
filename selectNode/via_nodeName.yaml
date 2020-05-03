@@ -1,0 +1,16 @@
+# https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes/
+# https://kubernetesbyexample.com/labels/
+apiVersion: v1
+kind: Pod
+metadata:
+ name: nginx
+spec:
+ nodeName: foo-node # schedule pod to specific node
+ containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+    resources:
+     limits:
+      cpu: 1mb
+      memory: 250mb

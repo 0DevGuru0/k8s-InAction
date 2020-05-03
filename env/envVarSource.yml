@@ -1,0 +1,36 @@
+# All of belows come into play in container segment
+envFrom:
+ # 0
+ - configMapRef:
+    name: special-configs
+ # 1
+ - secretRef:
+    name: special-secrets
+---
+env:
+ # 1
+ - name: environment
+   value: setToOk
+ # 2
+ - name: environment
+   valueFrom:
+    fieldRef:
+     fieldPath: metadata.name
+ # 3
+ - name: environment
+   valueFrom:
+    resourceFieldRef:
+     containerName: nginx-container
+     resource: limits.cpu
+ # 4
+ - name: environment
+   valueFrom:
+    configMapKeyRef:
+     name: config-map-one
+     key: httpsPort
+ # 5
+ - name: environment
+   valueFrom:
+    secretKeyRef:
+     name: secret-one
+     key: authentication-password

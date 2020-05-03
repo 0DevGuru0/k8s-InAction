@@ -1,0 +1,74 @@
+# ---------------> ROLE & ROLEBINDING
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+ name: developer
+ namespace: default
+rules:
+ - apiGroups: [""]
+   resources: ["pods"]
+   verbs: ["list", "get", "update", "delete"] # developer can't create pods
+ - apiGroups: [""]
+   resources: ["ConfigMap"]
+   verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+ namespace: default
+ name: devUser-developer-binding
+subjects:
+ - kind: User
+   name: dev-user
+   apiGroup: rbac.authorization.k8s.io
+roleRef:
+ kind: Role
+ name: developer
+ apiGroup: rbac.authorization.k8s.io
+
+# -------------> CLUSTER ROLE & ROLEBINDING
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+ name: cluster-administrator
+rules:
+ - apiGroups: [""]
+   resources: ["nodes"]
+   verbs: ["list", "get", "create", "delete", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+ name: cluster-admin-role-binding
+subjects:
+ - kind: User
+   name: cluster-admin
+   apiGroup: rbac.authorization.k8s.io
+roleRef:
+ kind: ClusterRole
+ name: cluster-administrator
+ apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+ name: cluster-Health-Path
+rules:
+ - nonResourceURLs: ["/healthz", "/healthz/*"] # '*' in a nonResourceURL is a suffix glob match
+   verbs: ["get", "post"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+ annotations:
+  rbac.authorization.kubernetes.io/autoupdate: "true"
+ name: clusterRole-aggregation-controller
+ resourceVersion: "73"
+rules:
+ - apiGroups: ["*"]
+   resources: ["*"]
+   verbs: ["*"]
+
+ - nonResourceURLs: ["*"]
+   verbs: ["*"]

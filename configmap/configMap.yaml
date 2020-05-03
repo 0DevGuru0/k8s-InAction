@@ -1,0 +1,5 @@
+configMapGenerator:
+  - name: game-config
+    files:
+      - specialKeys=./keys
+# k apply -k <file-name>

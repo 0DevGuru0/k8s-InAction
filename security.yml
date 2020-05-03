@@ -1,0 +1,59 @@
+#  GENERATE PKI [Public key Infrastructure]
+
+# ----> Generate certificate for > Certificate Authority
+# openssl genrsa -out ca.key 2048
+# openssl req -new -key ca.key -out ca.csr -subj "/CN=KUBERNETES-CA"
+# openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt
+
+# ----> Generate certificate for > Admin User
+# openssl genrsa -out admin.key 2048
+# openssl req -new -key admin.key -out admin.csr -subj "/CN=kube-admin/O=system:masters"
+# openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -out admin.crt
+
+# ----> Generate certificate for > Kube Scheduler
+# openssl genrsa -out scheduler.key 2048
+# openssl req -new -key scheduler.key -out scheduler.csr -subj "/CN=kube-scheduler/O=system:masters"
+# openssl x509 -req -in scheduler.csr -CA ca.crt -CAkey ca.key -out scheduler.crt
+
+# ----> Generate certificate for > Kube-Controller-Manager
+# openssl genrsa -out controller-manager.key 2048
+# openssl req -new -key controller-manager.key -out controller-manager.csr -subj "/CN=kube-controller-manager/O=system:masters"
+# openssl x509 -req -in controller-manager.csr -CA ca.crt -CAkey ca.key -out controller-manager.crt
+
+# ----> Generate certificate for > Kube Proxy
+# openssl genrsa -out kube-proxy.key 2048
+# openssl req -new -key kube-proxy.key -out kube-proxy.csr -subj "/CN=kube-kube-proxy/O=system:masters"
+# openssl x509 -req -in kube-proxy.csr -CA ca.crt -CAkey ca.key -out kube-proxy.crt
+
+# openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout
+
+# #############################################################################
+# >>>>>>>>>Create new admin user<<<<<<<<<<<
+
+# openssl genrsa -out sajjad.key 2048
+
+# openssl req -new -key sajjad.key -out sajjad.csr -subj "/CN=kube-sajjad/O=system:masters"
+
+# cat <<EOF | kubectl apply -f -
+# apiVersion: certificates.k8s.io/v1beta1
+# kind: CertificateSigningRequest
+# metadata:
+#   name: sajjad
+# spec:
+#   request: $(cat sajjad.csr | base64 | tr -d '\n')
+#   usages:
+#   - digital signature
+#   - key encipherment
+#   - server auth
+# EOF
+
+# k certificate approve sajjad
+
+# k get csr sajjad -o jsonpath='{.status.certificate}' | base64 --decode > sajjad.crt
+
+# kubectl config view -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' --raw | base64 --decode - > k8s-ca.crt
+
+# curl https://$Kube-Master-Ip:6443/api/v1 \
+#  --key user.key \
+#  --cert user.crt \
+#  --cacert ca.crt

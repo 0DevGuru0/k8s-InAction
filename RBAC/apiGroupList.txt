@@ -1,0 +1,10 @@
+apiGroups:
+    - /api --> /v1 --> coreGroups
+    - /apis --> namedGroups [ apps | extensions| ]
+    - /version
+    - /healthz
+    - /metrics
+    - /logs
+    
+k auth can-i delete<verb> pod<resource>  --as dev-user<subject> 
+
