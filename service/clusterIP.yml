@@ -1,0 +1,3 @@
+# fully qualified service name
+# hostname.namespace.type.root (root:cluster.local)
+# http://web-app.production.svc.cluster.local

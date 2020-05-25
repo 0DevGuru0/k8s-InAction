@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ creationTimestamp: null
+ labels:
+  run: redis-prod
+ name: redis-prod
+spec:
+ containers:
+  - image: redis:alpine
+    name: redis-prod
+    resources: {}
+ tolerations:
+  - key: 'env_prod'
+    operator: 'Equal'
+    value: 'production'
+    effect: 'NoSchedule'
